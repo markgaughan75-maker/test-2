@@ -23,7 +23,6 @@ export default function RootLayout({ children }: { children: ReactNode }) {
               <a href="/" className="hover:text-violet-700">Home</a>
               <a href="/services" className="hover:text-violet-700">Services</a>
               <a href="/pricing" className="hover:text-violet-700">Pricing</a>
-              <a href="/subscribe" className="hover:text-violet-700">Subscribe</a>
               <a
                 href="/signin"
                 className="px-4 py-2 rounded-lg bg-violet-600 text-white hover:bg-violet-700 shadow"
