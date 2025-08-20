@@ -16,7 +16,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
           <div className="mx-auto max-w-7xl px-6 py-4 flex items-center justify-between">
             <a href="/" className="flex items-center">
               {/* Logo only */}
-              <div className="relative h-10 w-[160px]"> 
+              <div className="relative h-12 w-[192px]"> 
                 <Image
                   src="/Lumely%20Logo.png"   // file lives in /public (space encoded as %20)
                   alt="Lumely"
