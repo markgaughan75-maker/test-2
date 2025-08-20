@@ -17,7 +17,6 @@ export default function Home() {
     <div className="space-y-24">
       {/* HERO – toned down indigo/slate, no yellow */}
       <section className="relative text-white">
-        <div className="bg-hero-ai">
           <div className="mx-auto max-w-7xl px-6 py-24 text-center">
             <div className="inline-flex items-center gap-2 rounded-full border border-indigo-400/20 bg-indigo-400/10 px-3 py-1 text-indigo-200 text-xs font-semibold">
               Built for AEC • AI-powered visuals
