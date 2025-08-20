@@ -24,14 +24,14 @@ export default function CheckoutPage() {
   const router = useRouter();
   const search = useSearchParams();
 
-  // What action are we performing?
-  const plan   = search.get('plan') as PlanKey | null;          // e.g. ?plan=studio
-  const period = (search.get('period') as Period | null) || null; // e.g. &period=monthly
-  const topup  = search.get('topup');                           // e.g. ?topup=50
-  const change = search.get('change');                          // e.g. ?change=period&to=yearly
-  const to     = search.get('to') as Period | null;             // e.g. to=yearly
-  const update = search.get('update');                          // e.g. ?update=card
-  const cancel = search.get('cancel');                          // e.g. ?cancel=true
+  // Safely read params (search can be null at type level)
+  const plan   = (search?.get('plan') as PlanKey | null) ?? null;        // ?plan=studio
+  const period = (search?.get('period') as Period | null) ?? null;       // &period=monthly
+  const topup  = search?.get('topup') ?? null;                           // ?topup=50
+  const change = search?.get('change') ?? null;                          // ?change=period
+  const to     = (search?.get('to') as Period | null) ?? null;           // &to=yearly
+  const update = search?.get('update') ?? null;                          // ?update=card
+  const cancel = search?.get('cancel') ?? null;                          // ?cancel=true
 
   // Demo form state
   const [nameOnCard, setNameOnCard] = useState('');
@@ -50,20 +50,13 @@ export default function CheckoutPage() {
   }, [plan, period, topup, change, to, update, cancel]);
 
   const pricePreview = useMemo(() => {
-    // This is a mock processor — we just show indicative prices.
     if (topup) {
       const qty = parseInt(topup, 10) || 0;
-      // Example: €10 per 50 credits as a notional top-up price (adjust later)
-      const amount = qty <= 0 ? 0 : Math.max(5, Math.round((qty / 50) * 10));
+      const amount = qty <= 0 ? 0 : Math.max(5, Math.round((qty / 50) * 10)); // demo math
       return `€${amount}.00 (demo)`;
     }
-    if (plan && period) {
-      return `€${PLAN_PRICE[plan][period]}/mo (demo)`;
-    }
-    if (change === 'period' && to) {
-      // No charge to switch period in this demo
-      return '€0.00 (demo)';
-    }
+    if (plan && period) return `€${PLAN_PRICE[plan][period]}/mo (demo)`;
+    if (change === 'period' && to) return '€0.00 (demo)';
     if (update === 'card') return '€0.00 (demo)';
     if (cancel === 'true') return '€0.00 (demo)';
     return '';
@@ -72,25 +65,20 @@ export default function CheckoutPage() {
   function getCurrentCredits(): number {
     return parseInt(localStorage.getItem('lumely_credits') || '0', 10);
   }
-
   function setCredits(n: number) {
     localStorage.setItem('lumely_credits', String(Math.max(0, Math.floor(n))));
-    // Trigger any UI listeners (e.g., the top bar)
     window.dispatchEvent(new Event('storage'));
   }
-
   function setPlan(p: PlanKey, per: Period) {
     localStorage.setItem('lumely_plan', p);
     localStorage.setItem('lumely_period', per);
   }
 
-  async function handleConfirm(e: React.FormEvent) {
+  function handleConfirm(e: React.FormEvent) {
     e.preventDefault();
     setProcessing(true);
 
-    // Simulate a gateway delay
     setTimeout(() => {
-      // Apply changes for each intent
       if (topup) {
         const qty = parseInt(topup, 10) || 0;
         setCredits(getCurrentCredits() + qty);
@@ -98,13 +86,11 @@ export default function CheckoutPage() {
         const currentPlan = (localStorage.getItem('lumely_plan') as PlanKey) || 'free';
         setPlan(currentPlan, to);
       } else if (update === 'card') {
-        // No-op in demo
+        // no-op (demo)
       } else if (cancel === 'true') {
-        // Switch to free, reset credits to 5 (demo)
         setPlan('free', 'monthly');
         setCredits(Math.min(getCurrentCredits(), 5));
       } else if (plan && period) {
-        // Changing plan: set plan/period and reset monthly credits for demo
         setPlan(plan, period);
         setCredits(PLAN_PRICE[plan].credits);
       }
@@ -114,9 +100,7 @@ export default function CheckoutPage() {
     }, 900);
   }
 
-  // Basic guard: if nothing meaningful in query, show a hint
-  const hasAction =
-    !!topup || !!plan || !!update || !!cancel || (change === 'period' && !!to);
+  const hasAction = !!topup || !!plan || !!update || !!cancel || (change === 'period' && !!to);
 
   return (
     <div className="mx-auto max-w-3xl px-6 py-12">
@@ -135,7 +119,6 @@ export default function CheckoutPage() {
         </div>
       )}
 
-      {/* Mock card form */}
       <form onSubmit={handleConfirm} className="mt-8 space-y-4">
         <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
           <div className="grid gap-4 md:grid-cols-2">
