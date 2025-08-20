@@ -1,133 +1,201 @@
 'use client';
-import { useState } from 'react';
 
-type ServiceKey = 'render' | 'staging' | 'design';
+import { useMemo, useState } from 'react';
+import { Sparkles, Image as ImageIcon, X } from 'lucide-react';
 
-const SERVICE_LABELS: Record<ServiceKey, string> = {
-  render:  'Render Enhancement',
-  staging: 'Virtual Staging',
-  design:  'Design Options',
+type Service = 'render' | 'staging' | 'design';
+
+type Example = {
+  before: string;
+  after: string;
+  caption?: string;
 };
 
-export default function Examples() {
-  const [service, setService] = useState<ServiceKey>('render');
+const EXAMPLES: Record<Service, Example[]> = {
+  render: [
+    { before: '/examples/render/before-1.jpg', after: '/examples/render/after-1.jpg', caption: 'Daylight tone + clarity' },
+    { before: '/examples/render/before-2.jpg', after: '/examples/render/after-2.jpg', caption: 'Glare control + sky balance' },
+    { before: '/examples/render/before-3.jpg', after: '/examples/render/after-3.jpg', caption: 'Contrast + material pop' },
+    { before: '/examples/render/before-4.jpg', after: '/examples/render/after-4.jpg', caption: 'Facade realism' },
+  ],
+  staging: [
+    { before: '/examples/staging/before-1.jpg', after: '/examples/staging/after-1.jpg', caption: 'Scandi bedroom' },
+    { before: '/examples/staging/before-2.jpg', after: '/examples/staging/after-2.jpg', caption: 'Contemporary living' },
+    { before: '/examples/staging/before-3.jpg', after: '/examples/staging/after-3.jpg', caption: 'Warm dining mood' },
+    { before: '/examples/staging/before-4.jpg', after: '/examples/staging/after-4.jpg', caption: 'Loft workspace' },
+  ],
+  design: [
+    { before: '/examples/design/before-1.jpg', after: '/examples/design/after-1.jpg', caption: 'Cabinet + worktop swap' },
+    { before: '/examples/design/before-2.jpg', after: '/examples/design/after-2.jpg', caption: 'Floor + wall palette' },
+    { before: '/examples/design/before-3.jpg', after: '/examples/design/after-3.jpg', caption: 'Exterior material study' },
+    { before: '/examples/design/before-4.jpg', after: '/examples/design/after-4.jpg', caption: 'Lighting temperature' },
+  ],
+};
 
-  const tabs: { key: ServiceKey; label: string }[] = [
-    { key: 'render',  label: 'Render Enhancement' },
+function ServiceTabs({
+  value,
+  onChange,
+}: {
+  value: Service;
+  onChange: (s: Service) => void;
+}) {
+  const tabs: { key: Service; label: string }[] = [
+    { key: 'render', label: 'Render Enhancement' },
     { key: 'staging', label: 'Virtual Staging' },
-    { key: 'design',  label: 'Design Options' },
+    { key: 'design', label: 'Design Options' },
   ];
+  return (
+    <div className="grid grid-cols-3 gap-3">
+      {tabs.map((t) => {
+        const active = value === t.key;
+        return (
+          <button
+            key={t.key}
+            onClick={() => onChange(t.key)}
+            className={`rounded-2xl px-4 py-3 text-left transition border ${
+              active
+                ? 'bg-slate-900 text-white border-slate-800'
+                : 'bg-white text-slate-700 border-slate-200 hover:bg-slate-50'
+            }`}
+          >
+            <div className="flex items-center gap-2">
+              <span
+                className={`h-5 w-5 rounded-full grid place-items-center text-[11px] ${
+                  active ? 'bg-cyan-300 text-slate-900' : 'bg-slate-100 text-slate-500'
+                }`}
+              >
+                ✦
+              </span>
+              <span className="font-semibold">{t.label}</span>
+            </div>
+          </button>
+        );
+      })}
+    </div>
+  );
+}
+
+function ExampleCard({
+  example,
+  onOpen,
+}: {
+  example: Example;
+  onOpen: (src: string) => void;
+}) {
+  return (
+    <figure className="rounded-2xl border border-slate-200 bg-white overflow-hidden shadow-sm">
+      <div className="grid grid-cols-2">
+        <button
+          onClick={() => onOpen(example.before)}
+          className="relative aspect-[4/3] group"
+          title="Open before"
+        >
+          <img
+            src={example.before}
+            alt="Before"
+            className="absolute inset-0 h-full w-full object-cover"
+            onError={(e) => ((e.target as HTMLImageElement).style.display = 'none')}
+          />
+          <div className="absolute left-2 top-2 text-[11px] px-2 py-1 rounded bg-black/50 text-white">
+            Before
+          </div>
+          <div className="absolute inset-0 hidden group-hover:flex items-center justify-center bg-black/20 text-white text-xs">
+            <ImageIcon className="h-5 w-5 mr-2" />
+            Click to enlarge
+          </div>
+        </button>
+        <button
+          onClick={() => onOpen(example.after)}
+          className="relative aspect-[4/3] group"
+          title="Open after"
+        >
+          <img
+            src={example.after}
+            alt="After"
+            className="absolute inset-0 h-full w-full object-cover"
+            onError={(e) => ((e.target as HTMLImageElement).style.display = 'none')}
+          />
+          <div className="absolute left-2 top-2 text-[11px] px-2 py-1 rounded bg-black/50 text-white">
+            After
+          </div>
+          <div className="absolute inset-0 hidden group-hover:flex items-center justify-center bg-black/20 text-white text-xs">
+            <ImageIcon className="h-5 w-5 mr-2" />
+            Click to enlarge
+          </div>
+        </button>
+      </div>
+      {example.caption && (
+        <figcaption className="px-4 py-3 text-sm text-slate-600 border-t border-slate-100">
+          {example.caption}
+        </figcaption>
+      )}
+    </figure>
+  );
+}
+
+export default function ExamplesPage() {
+  const [service, setService] = useState<Service>('render');
+  const [lightbox, setLightbox] = useState<string | null>(null);
+
+  const data = useMemo(() => EXAMPLES[service], [service]);
 
   return (
-    <div className="space-y-10">
+    <div className="mx-auto max-w-7xl px-6 py-16 space-y-12">
       {/* Header */}
-      <div className="text-center">
-        <h1 className="text-4xl font-extrabold tracking-tight">Examples</h1>
-        <p className="mt-2 text-slate-600">Browse results by service and compare <em>Before</em> vs <em>After</em>.</p>
-      </div>
+      <header className="text-center">
+        <span className="inline-flex items-center gap-2 rounded-full border border-indigo-200 bg-indigo-50 px-3 py-1 text-indigo-600 text-xs font-semibold">
+          <Sparkles size={14} /> Real outputs
+        </span>
+        <h1 className="mt-4 text-4xl md:text-5xl font-extrabold tracking-tight">
+          Before & after examples
+        </h1>
+        <p className="mt-3 text-slate-600 max-w-2xl mx-auto">
+          Explore how Lumely enhances base renders, stages interiors, and explores material options
+          while preserving geometry and intent.
+        </p>
+      </header>
 
-      {/* Segmented Slider / Tabs */}
-      <div className="mx-auto max-w-3xl">
-        <div className="relative bg-white border border-slate-200 rounded-2xl p-1 shadow-sm">
-          <div className="grid grid-cols-3 gap-1">
-            {tabs.map((t) => {
-              const active = t.key === service;
-              return (
-                <button
-                  key={t.key}
-                  onClick={() => setService(t.key)}
-                  className={`relative z-10 w-full rounded-xl px-4 py-2 text-sm font-semibold transition ${
-                    active
-                      ? 'text-white'
-                      : 'text-slate-600 hover:text-slate-800'
-                  }`}
-                >
-                  {t.label}
-                </button>
-              );
-            })}
-          </div>
+      {/* Tabs */}
+      <ServiceTabs value={service} onChange={setService} />
 
-          {/* Sliding highlight */}
-          <div
-            className={`absolute inset-y-1 w-1/3 rounded-xl bg-violet-600 transition-transform duration-300`}
-            style={{
-              transform:
-                service === 'render'
-                  ? 'translateX(0%)'
-                  : service === 'staging'
-                  ? 'translateX(100%)'
-                  : 'translateX(200%)',
-            }}
+      {/* Grid */}
+      <section className="grid gap-6 md:grid-cols-2 mt-4">
+        {data.map((ex, i) => (
+          <ExampleCard key={i} example={ex} onOpen={(src) => setLightbox(src)} />
+        ))}
+      </section>
+
+      {/* CTA */}
+      <section className="text-center pt-6">
+        <p className="text-slate-600">Want to see your own image enhanced?</p>
+        <a
+          href="/signin"
+          className="inline-block mt-3 px-6 py-3 rounded-xl bg-indigo-600 text-white font-semibold hover:bg-indigo-500"
+        >
+          Try Lumely with 5 free credits
+        </a>
+      </section>
+
+      {/* Lightbox */}
+      {lightbox && (
+        <div
+          className="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm grid place-items-center p-4"
+          onClick={() => setLightbox(null)}
+        >
+          <button
+            className="absolute top-4 right-4 h-10 w-10 rounded-full bg-white/90 text-slate-900 grid place-items-center shadow"
+            onClick={() => setLightbox(null)}
+            aria-label="Close"
+          >
+            <X className="h-5 w-5" />
+          </button>
+          <img
+            src={lightbox}
+            alt="Preview"
+            className="max-h-[85vh] w-auto rounded-xl shadow-2xl border border-white/10"
           />
         </div>
-      </div>
-
-      {/* Examples grid */}
-      <ExamplesGrid service={service} />
+      )}
     </div>
   );
-}
-
-/** Renders placeholder pairs for each service */
-function ExamplesGrid({ service }: { service: ServiceKey }) {
-  const cards = getCards(service);
-  return (
-    <div className="grid gap-6 md:grid-cols-2">
-      {cards.map((c, i) => (
-        <figure key={i} className="rounded-2xl bg-white border border-slate-200 shadow-sm p-4">
-          <figcaption className="mb-3">
-            <h3 className="font-semibold">{c.title}</h3>
-            <p className="text-sm text-slate-500">{c.subtitle}</p>
-          </figcaption>
-          <div className="grid grid-cols-2 gap-3">
-            {/* BEFORE */}
-            <div>
-              <p className="text-xs text-slate-500 mb-1">Before</p>
-              <PlaceholderImage label="Before" />
-            </div>
-            {/* AFTER */}
-            <div>
-              <p className="text-xs text-slate-500 mb-1">After</p>
-              <PlaceholderImage label="After" />
-            </div>
-          </div>
-        </figure>
-      ))}
-    </div>
-  );
-}
-
-function PlaceholderImage({ label }: { label: string }) {
-  return (
-    <div className="aspect-[16/10] w-full overflow-hidden rounded-xl bg-slate-100 grid place-items-center border border-slate-200">
-      <span className="text-slate-400 text-sm">{label} image</span>
-    </div>
-  );
-}
-
-function getCards(service: ServiceKey): { title: string; subtitle: string }[] {
-  if (service === 'render') {
-    return [
-      { title: 'Exterior daylight', subtitle: 'Photoreal tone, preserved geometry, ×2 upscale' },
-      { title: 'Interior corridor', subtitle: 'Contrast + glare control, ×4 upscale' },
-      { title: 'Aerial context', subtitle: 'Haze cleanup, material fidelity' },
-      { title: 'Façade detail', subtitle: 'Edge clarity, neutral white balance' },
-    ];
-  }
-  if (service === 'staging') {
-    return [
-      { title: 'Living room (Scandi)', subtitle: 'Furniture staging, ×2 upscale' },
-      { title: 'Bedroom (Warm modern)', subtitle: 'Soft textiles, neutral grading' },
-      { title: 'Kitchen (Minimal)', subtitle: 'Declutter, clean reflections' },
-      { title: 'Dining (Industrial)', subtitle: 'Material accents, realistic shadows' },
-    ];
-  }
-  // design options
-  return [
-    { title: 'Elevation options', subtitle: 'Timber vs brick, day vs dusk' },
-    { title: 'Lobby mood study', subtitle: 'Warm vs cool palettes' },
-    { title: 'Cladding comparison', subtitle: 'Light oak vs dark metal' },
-    { title: 'Landscape concept', subtitle: 'Green density & lighting variants' },
-  ];
 }
