@@ -2,10 +2,42 @@
 @tailwind components;
 @tailwind utilities;
 
-:root { color-scheme: light; }
+/* Import Google Font */
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap');
 
-body {
-  @apply antialiased;
+/* Base styles */
+html, body {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  scroll-behavior: smooth;
+  background-color: #ffffff;
+  color: #1a1a1a;
 }
 
-button { @apply transition; }
+/* Smooth transitions on hover */
+a, button {
+  transition: all 0.2s ease-in-out;
+}
+
+/* Custom gradients */
+.bg-gradient-hero {
+  background: linear-gradient(135deg, #7c3aed, #5b21b6);
+}
+
+.bg-gradient-cta {
+  background: linear-gradient(135deg, #4c1d95, #7c3aed);
+}
+
+/* Utility: container widths */
+.container {
+  @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
+}
+
+/* Shadow for cards */
+.card {
+  @apply rounded-2xl shadow-md bg-white;
+}
+
+/* Placeholder image styling */
+.placeholder-img {
+  @apply bg-gray-200 flex items-center justify-center text-gray-500 text-sm;
+}
