@@ -1,189 +1,196 @@
-'use client';
-import { useState } from 'react';
+"use client";
 
-type TabKey = 'render'|'staging'|'design';
-const TAB_LABELS: Record<TabKey,string> = {
-  render:  'Render Enhancement',
-  staging: 'Virtual Staging',
-  design:  'Design Options',
-};
+import { useState } from "react";
+import Image from "next/image";
+import { ArrowRight, Star, Upload, Zap, Wand2, CheckCircle } from "lucide-react";
 
-export default function Home() {
-  const [tab, setTab] = useState<TabKey>('render');
-
+// Simple before/after slider component
+function BeforeAfter({ before, after }: { before: string; after: string }) {
+  const [pos, setPos] = useState(50);
   return (
-    <div className="space-y-24">
-      {/* HERO */}
-      <section className="text-center">
-        <div className="inline-flex items-center gap-2 rounded-full bg-violet-100 px-3 py-1 text-violet-700 text-xs font-semibold">
-          Built for AEC • Architects • Real Estate
-        </div>
-        <h1 className="mt-4 text-4xl md:text-6xl font-extrabold tracking-tight">
-          Photoreal results from any render — <span className="text-violet-700">in minutes</span>
-        </h1>
-        <p className="mt-4 text-lg text-slate-600 max-w-3xl mx-auto">
-          Lumely enhances CG renders, stages interiors, and explores design options while preserving geometry and materials.
-          Fast, consistent, client-ready.
-        </p>
-        <div className="mt-6 flex items-center justify-center gap-4">
-          <a href="/pricing" className="px-6 py-3 rounded-xl bg-violet-600 text-white hover:bg-violet-700 shadow">
-            See pricing
-          </a>
-          <a href="/features" className="px-6 py-3 rounded-xl bg-white border border-slate-200 hover:border-violet-300 shadow-sm">
-            View features
-          </a>
-        </div>
-        <p className="mt-3 text-sm text-slate-500">No credit card required for the free trial.</p>
-      </section>
-
-      {/* DARK FEATURE BLOCK WITH PILL SLIDER */}
-      <section className="rounded-3xl p-4 md:p-8 bg-[#262F26] text-white border border-[#1e261e]">
-        {/* pills */}
-        <div className="grid grid-cols-3 gap-3 mb-6">
-          {(['render','staging','design'] as TabKey[]).map((k) => {
-            const active = tab === k;
-            return (
-              <button
-                key={k}
-                onClick={()=>setTab(k)}
-                className={`rounded-2xl text-left px-4 py-3 border transition ${
-                  active
-                    ? 'bg-[#121812] border-[#121812] text-white shadow'
-                    : 'bg-[#EBEFE6] text-[#0f120f] border-[#e2e7da] hover:bg-white'
-                }`}
-              >
-                <div className="flex items-center gap-2">
-                  <span className={`h-5 w-5 rounded-full grid place-items-center ${active ? 'bg-white text-[#121812]' : 'bg-[#121812] text-white'}`}>✦</span>
-                  <span className="font-semibold">{TAB_LABELS[k]}</span>
-                </div>
-              </button>
-            );
-          })}
-        </div>
-
-        {/* content card */}
-        <div className="rounded-3xl p-6 md:p-10 bg-[#1d251d] border border-[#131a13]">
-          <div className="grid gap-8 md:grid-cols-2 items-center">
-            <div>
-              <h2 className="text-3xl md:text-4xl font-extrabold leading-tight">
-                Keep control of your outcomes — no surprises.
-              </h2>
-              <p className="mt-3 text-[#ccd5cc]">
-                Precisely define your space and avoid AI-generated errors. Our enhancer respects geometry and materials.
-              </p>
-
-              <ul className="mt-6 space-y-2 text-sm">
-                <li className="inline-flex items-center gap-2 bg-[#2d382e] rounded-lg px-3 py-2">
-                  <span className="text-[#a9f5a9]">✔</span> Maximum design control
-                </li>
-                <li className="inline-flex items-center gap-2 bg-[#2d382e] rounded-lg px-3 py-2">
-                  <span className="text-[#a9f5a9]">✔</span> Define each segment
-                </li>
-                <li className="inline-flex items-center gap-2 bg-[#2d382e] rounded-lg px-3 py-2">
-                  <span className="text-[#a9f5a9]">✔</span> Preserve architectural detail
-                </li>
-              </ul>
-            </div>
-
-            {/* before/after panel */}
-            <div className="rounded-2xl overflow-hidden bg-[#0f120f] border border-[#111]">
-              <BeforeAfter tab={tab} />
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* HOW IT WORKS (with icons) */}
-      <section>
-        <h2 className="text-3xl font-extrabold tracking-tight text-center">How Lumely works</h2>
-        <p className="text-center text-slate-600 mt-2">From rough to refined — without changing your workflow.</p>
-        <div className="mt-8 grid gap-6 md:grid-cols-3">
-          {[
-            {t:'Sign in & upload', d:'Start a new job from your dashboard. 1080p–4K supported.', icon:'M4 4h16v4H4zM4 10h16v10H4z'},
-            {t:'Enhance & upscale', d:'Pick Low / Medium / High. Preserve geometry, add realism, ×2/×4 sharpness.', icon:'M12 8V4l8 8-8 8v-4H4V8z'},
-            {t:'Download & deliver', d:'Client-ready output for decks, listings and approvals.', icon:'M3 20h18v-2H3zM5 6h14v10H5z'},
-          ].map((s)=>(
-            <div key={s.t} className="rounded-2xl bg-white p-6 shadow-sm border border-slate-200 hover:shadow-md transition">
-              <div className="h-10 w-10 rounded-xl bg-violet-600 grid place-items-center mb-4">
-                <svg viewBox="0 0 24 24" className="h-6 w-6 text-white"><path d={s.icon} fill="currentColor"/></svg>
-              </div>
-              <h3 className="font-bold text-lg">{s.t}</h3>
-              <p className="text-slate-600 mt-1">{s.d}</p>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      {/* FEATURES GRID */}
-      <section className="rounded-2xl bg-white p-8 border border-slate-200 shadow-sm">
-        <div className="grid gap-6 md:grid-cols-3">
-          {[
-            {t:'AEC-grade realism', d:'Tone, lighting, reflections, foliage, skies — tuned for archviz.'},
-            {t:'Preserve geometry', d:'No shape warping. Lines and edges remain true.'},
-            {t:'Tiered quality', d:'Low (1), Medium (2), High (4) credits per image.'},
-            {t:'Fast & automated', d:'Upload → queue → download. Optional email notifications.'},
-            {t:'Cost-efficient', d:'Use credits across all features and workflows.'},
-            {t:'Verified-views compatible', d:'Your studio can still deliver legal accuracy when required.'},
-          ].map((f)=>(
-            <div key={f.t}>
-              <h4 className="font-semibold">{f.t}</h4>
-              <p className="text-slate-600 mt-1">{f.d}</p>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      {/* CTA */}
-      <section className="text-center">
-        <h3 className="text-2xl md:text-3xl font-extrabold">Ready to try Lumely?</h3>
-        <p className="text-slate-600 mt-2">Start free with 5 credits. No card required.</p>
-        <div className="mt-6">
-          <a href="/signin" className="px-6 py-3 rounded-xl bg-violet-600 text-white hover:bg-violet-700 shadow">
-            Sign in to start
-          </a>
-        </div>
-      </section>
+    <div
+      className="relative w-full max-w-xl h-64 overflow-hidden rounded-2xl shadow-lg cursor-col-resize"
+      onMouseMove={(e) => {
+        const rect = e.currentTarget.getBoundingClientRect();
+        const x = ((e.clientX - rect.left) / rect.width) * 100;
+        setPos(x);
+      }}
+    >
+      <Image src={before} alt="Before" fill className="object-cover" />
+      <div
+        className="absolute top-0 left-0 h-full overflow-hidden"
+        style={{ width: `${pos}%` }}
+      >
+        <Image src={after} alt="After" fill className="object-cover" />
+      </div>
+      <div className="absolute inset-0 border-l-2 border-violet-500" style={{ left: `${pos}%` }} />
     </div>
   );
 }
 
-/* BEFORE / AFTER component with tab-specific placeholders */
-function BeforeAfter({ tab }: { tab: TabKey }) {
-  // You can replace these with real images in /public/placeholder/...
-  const sets = {
-    render:  { before: '/placeholder/render-before.jpg',  after: '/placeholder/render-after.jpg'  },
-    staging: { before: '/placeholder/staging-before.jpg', after: '/placeholder/staging-after.jpg' },
-    design:  { before: '/placeholder/design-before.jpg',  after: '/placeholder/design-after.jpg'  },
-  } as const;
-  const imgs = sets[tab];
-
+export default function HomePage() {
   return (
-    <div className="grid grid-cols-2 gap-[1px] bg-[#141914]">
-      <div className="p-3 bg-[#0f120f]">
-        <p className="text-xs text-[#93a393] mb-2">Before</p>
-        <div className="aspect-[16/10] w-full rounded-xl overflow-hidden bg-[#1b221b] grid place-items-center">
-          <img
-            src={imgs.before}
-            alt="before"
-            className="h-full w-full object-cover opacity-90"
-            onError={(e)=>((e.target as HTMLImageElement).style.display='none')}
-          />
-          {/* shows label if no image file exists */}
-          <span className="text-[#5a6a5a] absolute">Placeholder</span>
+    <div className="font-['Plus_Jakarta_Sans']">
+      {/* HERO */}
+      <section className="relative bg-gradient-to-b from-violet-600 via-violet-700 to-violet-800 text-white text-center py-28 px-6">
+        <h1 className="text-5xl md:text-6xl font-extrabold tracking-tight max-w-4xl mx-auto">
+          Transform Your Renders into <span className="text-yellow-300">Photoreal Perfection</span>
+        </h1>
+        <p className="mt-6 max-w-2xl mx-auto text-lg text-violet-100">
+          Lumely uses AI to enhance, upscale, and reimagine your architectural visualizations.
+          Faster, sharper, and smarter — designed for the AEC industry.
+        </p>
+        <div className="mt-8 flex justify-center gap-4">
+          <a
+            href="/signin"
+            className="px-6 py-3 rounded-xl bg-yellow-300 text-violet-900 font-semibold hover:bg-yellow-400 transition"
+          >
+            Start Free
+          </a>
+          <a
+            href="/pricing"
+            className="px-6 py-3 rounded-xl border border-violet-200 font-semibold hover:bg-white hover:text-violet-700 transition"
+          >
+            View Pricing
+          </a>
         </div>
-      </div>
-      <div className="p-3 bg-[#0f120f]">
-        <p className="text-xs text-[#93a393] mb-2">After</p>
-        <div className="aspect-[16/10] w-full rounded-xl overflow-hidden bg-[#1b221b] grid place-items-center">
-          <img
-            src={imgs.after}
-            alt="after"
-            className="h-full w-full object-cover opacity-90"
-            onError={(e)=>((e.target as HTMLImageElement).style.display='none')}
-          />
-          <span className="text-[#5a6a5a] absolute">Placeholder</span>
+      </section>
+
+      {/* TRUST */}
+      <section className="py-12 bg-white text-center">
+        <p className="text-gray-500 text-sm uppercase mb-6">Trusted by forward-thinking teams</p>
+        <div className="flex justify-center gap-12 opacity-70">
+          <div className="h-8 w-24 bg-gray-200 rounded" />
+          <div className="h-8 w-24 bg-gray-200 rounded" />
+          <div className="h-8 w-24 bg-gray-200 rounded" />
         </div>
-      </div>
+      </section>
+
+      {/* HOW IT WORKS */}
+      <section className="py-20 bg-gray-50">
+        <h2 className="text-4xl font-bold text-center mb-14">How Lumely Works</h2>
+        <div className="grid md:grid-cols-3 gap-10 max-w-6xl mx-auto px-6">
+          <div className="bg-white p-8 rounded-2xl shadow text-center">
+            <Upload className="h-12 w-12 mx-auto text-violet-600 mb-4" />
+            <h3 className="font-semibold text-lg mb-2">1. Upload</h3>
+            <p className="text-gray-500">Drag and drop your render — any format, any resolution.</p>
+          </div>
+          <div className="bg-white p-8 rounded-2xl shadow text-center">
+            <Wand2 className="h-12 w-12 mx-auto text-violet-600 mb-4" />
+            <h3 className="font-semibold text-lg mb-2">2. Choose Enhancement</h3>
+            <p className="text-gray-500">Select AI options — upscale, photoreal, or design variants.</p>
+          </div>
+          <div className="bg-white p-8 rounded-2xl shadow text-center">
+            <Zap className="h-12 w-12 mx-auto text-violet-600 mb-4" />
+            <h3 className="font-semibold text-lg mb-2">3. Get Results</h3>
+            <p className="text-gray-500">Receive ultra-realistic visuals in seconds, ready to use.</p>
+          </div>
+        </div>
+      </section>
+
+      {/* FEATURES / SLIDERS */}
+      <section className="py-20 bg-white text-center">
+        <h2 className="text-4xl font-bold mb-14">Our Features</h2>
+        <div className="grid md:grid-cols-3 gap-12 max-w-6xl mx-auto px-6">
+          <div>
+            <h3 className="font-semibold mb-4">Render Enhancement</h3>
+            <BeforeAfter before="/placeholder-before.jpg" after="/placeholder-after.jpg" />
+          </div>
+          <div>
+            <h3 className="font-semibold mb-4">Design Variants</h3>
+            <BeforeAfter before="/placeholder-before.jpg" after="/placeholder-after.jpg" />
+          </div>
+          <div>
+            <h3 className="font-semibold mb-4">Photoreal Visualisations</h3>
+            <BeforeAfter before="/placeholder-before.jpg" after="/placeholder-after.jpg" />
+          </div>
+        </div>
+      </section>
+
+      {/* VALUE PROPOSITION */}
+      <section className="py-20 bg-gray-50">
+        <h2 className="text-4xl font-bold text-center mb-14">Why Choose Lumely?</h2>
+        <div className="grid md:grid-cols-4 gap-10 max-w-6xl mx-auto px-6">
+          {[
+            { title: "Fast Turnarounds", desc: "Enhancements in seconds, not days." },
+            { title: "Photorealistic Quality", desc: "Sharper, clearer, more lifelike renders." },
+            { title: "Flexible AI Prompts", desc: "Guide the AI to match your vision." },
+            { title: "AEC Industry Focused", desc: "Built for architects & visualization studios." },
+          ].map((f) => (
+            <div key={f.title} className="bg-white p-8 rounded-2xl shadow">
+              <CheckCircle className="h-8 w-8 text-violet-600 mb-4" />
+              <h3 className="font-semibold mb-2">{f.title}</h3>
+              <p className="text-gray-500">{f.desc}</p>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* TESTIMONIALS */}
+      <section className="py-20 bg-white text-center">
+        <h2 className="text-4xl font-bold mb-14">What Our Users Say</h2>
+        <div className="grid md:grid-cols-3 gap-10 max-w-6xl mx-auto px-6">
+          {[1, 2, 3].map((n) => (
+            <div key={n} className="bg-gray-50 p-8 rounded-2xl shadow">
+              <div className="flex justify-center mb-3 text-yellow-400">
+                {[...Array(5)].map((_, i) => (
+                  <Star key={i} className="h-5 w-5 fill-yellow-400" />
+                ))}
+              </div>
+              <p className="text-gray-700 mb-4">
+                “Lumely completely changed how we present projects — our renders now look
+                indistinguishable from photography.”
+              </p>
+              <p className="text-sm font-semibold text-violet-700">John Smith, Architect</p>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* PRICING PREVIEW */}
+      <section className="py-20 bg-gray-50 text-center">
+        <h2 className="text-4xl font-bold mb-8">Simple Pricing</h2>
+        <p className="text-gray-500 mb-12">Choose the plan that fits your studio.</p>
+        <div className="flex justify-center gap-8">
+          <div className="bg-white p-8 rounded-2xl shadow max-w-sm">
+            <h3 className="font-semibold mb-2">Starter</h3>
+            <p className="text-3xl font-bold">€20</p>
+            <p className="text-gray-500 mb-6">50 credits</p>
+            <a
+              href="/pricing"
+              className="px-6 py-3 rounded-xl bg-violet-600 text-white font-semibold hover:bg-violet-700 transition"
+            >
+              Get Started
+            </a>
+          </div>
+          <div className="bg-white p-8 rounded-2xl shadow max-w-sm border-2 border-violet-600">
+            <h3 className="font-semibold mb-2">Studio</h3>
+            <p className="text-3xl font-bold">€35</p>
+            <p className="text-gray-500 mb-6">200 credits</p>
+            <a
+              href="/pricing"
+              className="px-6 py-3 rounded-xl bg-violet-600 text-white font-semibold hover:bg-violet-700 transition"
+            >
+              Most Popular
+            </a>
+          </div>
+        </div>
+      </section>
+
+      {/* FINAL CTA */}
+      <section className="py-28 bg-gradient-to-b from-violet-700 to-violet-900 text-center text-white">
+        <h2 className="text-4xl font-extrabold mb-6">Ready to Transform Your Renders?</h2>
+        <p className="max-w-2xl mx-auto text-violet-200 mb-10">
+          Join architects and designers worldwide using Lumely to deliver photoreal results at
+          lightning speed.
+        </p>
+        <a
+          href="/signin"
+          className="px-8 py-4 rounded-xl bg-yellow-300 text-violet-900 font-bold text-lg hover:bg-yellow-400 transition"
+        >
+          Start Free
+        </a>
+      </section>
     </div>
   );
 }
