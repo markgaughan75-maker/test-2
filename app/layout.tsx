@@ -1,5 +1,6 @@
 import '../styles/globals.css';
 import { ReactNode } from 'react';
+import Image from 'next/image';
 
 export const metadata = {
   title: 'Lumely',
@@ -14,7 +15,14 @@ export default function RootLayout({ children }: { children: ReactNode }) {
         <header className="sticky top-0 z-30 bg-white/80 backdrop-blur border-b border-slate-200">
           <div className="mx-auto max-w-7xl px-6 py-4 flex items-center justify-between">
             <a href="/" className="flex items-center gap-2">
-              <div className="h-8 w-8 rounded-xl bg-violet-600" />
+              <Image
+                src="/Lumely%20Logo.png"   // file lives in /public, space encoded as %20
+                alt="Lumely logo"
+                width={32}
+                height={32}
+                className="rounded-xl object-contain"
+                priority
+              />
               <span className="text-xl font-extrabold tracking-tight text-violet-700">Lumely</span>
             </a>
 
