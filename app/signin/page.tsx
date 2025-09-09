@@ -1,6 +1,8 @@
-'use client';
+"use client";
 
 import { useState } from 'react';
+import { signIn } from 'next-auth/react';
+import { useRouter } from 'next/navigation';
 import { Mail, Lock, Chrome, Apple, Github, ShieldCheck } from 'lucide-react';
 
 export default function SignInPage() {
@@ -8,22 +10,27 @@ export default function SignInPage() {
   const [pw, setPw] = useState('');
   const [loading, setLoading] = useState(false);
   const [err, setErr] = useState<string | null>(null);
+  const router = useRouter();
 
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
     setErr(null);
     setLoading(true);
-
-    // TODO: replace with real auth (Supabase/NextAuth/etc.)
-    // For now, just simulate and redirect.
-    setTimeout(() => {
-      window.location.href = '/services';
-    }, 600);
+    const res = await signIn('credentials', {
+      redirect: false,
+      email,
+      password: pw,
+    });
+    setLoading(false);
+    if (res?.error) {
+      setErr('Invalid email or password');
+    } else {
+      router.push('/services');
+    }
   }
 
-  function socialClick(provider: 'google' | 'apple' | 'microsoft') {
-    // TODO: replace with real OAuth
-    window.location.href = '/services';
+  function socialClick(provider: 'google') {
+    signIn(provider, { callbackUrl: '/services' });
   }
 
   return (
@@ -45,21 +52,6 @@ export default function SignInPage() {
           >
             <Chrome className="h-5 w-5 text-indigo-600" />
             Continue with Google
-          </button>
-          <button
-            onClick={() => socialClick('apple')}
-            className="inline-flex w-full items-center justify-center gap-3 rounded-xl border border-slate-200 bg-white px-4 py-3 text-slate-800 hover:bg-slate-50"
-          >
-            <Apple className="h-5 w-5" />
-            Continue with Apple
-          </button>
-          <button
-            onClick={() => socialClick('microsoft')}
-            className="inline-flex w-full items-center justify-center gap-3 rounded-xl border border-slate-200 bg-white px-4 py-3 text-slate-800 hover:bg-slate-50"
-            title="Microsoft / GitHub placeholder"
-          >
-            <Github className="h-5 w-5" />
-            Continue with Microsoft
           </button>
         </div>
 
